@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Kemarahan Ndoro-ku</title>
+    <style>
+      body {
+        margin: 0;
+        padding: 0;
+        font-family: "Poppins", sans-serif;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        background: linear-gradient(to bottom, #ffdde1, #ee9ca7);
+        overflow: hidden;
+      }
+
+      .container {
+        text-align: center;
+        width: 90%;
+        max-width: 400px;
+        z-index: 1;
+      }
+
+      .progress-bar {
+        width: 100%;
+        height: 25px;
+        background: #f5b7b1;
+        border-radius: 12px;
+        overflow: hidden;
+        margin-top: 50px;
+        margin-bottom: 20px;
+      }
+
+      .progress {
+        height: 100%;
+        width: 0%;
+        background: linear-gradient(to right, #ff4d4d, #ff1a75);
+        transition: width 0.3s ease;
+      }
+
+      .funny-text {
+        margin-bottom: 15px;
+        font-size: 1rem;
+        font-weight: bold;
+        color: #fff;
+        text-shadow: 0 2px 6px rgba(0, 0, 0, 0.4);
+        opacity: 0;
+        transition: opacity 0.5s ease;
+        height: 24px;
+      }
+
+      .funny-text.show {
+        opacity: 1;
+      }
+
+      .click-btn {
+        width: 100px;
+        height: 100px;
+        border-radius: 50%;
+        background: #f18787;
+        border: none;
+        color: white;
+        font-size: 1.5rem;
+        font-weight: bold;
+        cursor: pointer;
+        box-shadow: 0 6px 15px rgba(0, 0, 0, 0.3);
+        transition: transform 0.2s;
+        position: relative;
+        z-index: 2;
+      }
+
+      .click-btn:active {
+        transform: scale(0.9);
+      }
+
+      .hint {
+        margin-top: 25px;
+        font-size: 0.95rem;
+        color: #371e38;
+      }
+
+      /* Overlay */
+      .overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        backdrop-filter: blur(6px);
+        background: rgba(0, 0, 0, 0.3);
+        opacity: 0;
+        visibility: hidden;
+        transition: opacity 0.4s ease;
+        z-index: 2;
+      }
+
+      .overlay.show {
+        opacity: 1;
+        visibility: visible;
+      }
+
+      /* Popup Card */
+      .popup {
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%) scale(0.8);
+        background: #fff;
+        padding: 20px;
+        border-radius: 16px;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+        text-align: center;
+        opacity: 0;
+        visibility: hidden;
+        transition: all 0.4s ease;
+        max-width: 350px;
+        width: 90%;
+        z-index: 3;
+      }
+
+      .popup.show {
+        opacity: 1;
+        visibility: visible;
+        transform: translate(-50%, -50%) scale(1);
+      }
+
+      .close-btn {
+        margin-top: 15px;
+        padding: 10px 20px;
+        border: none;
+        background: #ff4d4d;
+        color: white;
+        font-size: 1rem;
+        border-radius: 8px;
+        cursor: pointer;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+      }
+
+      /* Hati konfetti */
+      .heart {
+        position: absolute;
+        font-size: 1.2rem;
+        animation: fly 1s ease forwards;
+        pointer-events: none;
+      }
+
+      @keyframes fly {
+        0% {
+          opacity: 1;
+          transform: translateY(0) scale(1) rotate(0deg);
+        }
+        100% {
+          opacity: 0;
+          transform: translateY(-120px) scale(1.5) rotate(360deg);
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h1 class="heading">Ada games nih buat kamu❣️</h1>
+      <div class="progress-bar">
+        <div class="progress" id="progress"></div>
+      </div>
+
+      <div class="funny-text" id="funnyText"></div>
+
+      <button class="click-btn" id="clickBtn">❤️</button>
+      <div class="hint">
+        klik tombol buat ngisi bar sampe penuh kalo masih marah sama aku
+      </div>
+    </div>
+
+    <!-- Overlay -->
+    <div class="overlay" id="overlay"></div>
+
+    <!-- Popup -->
+    <div class="popup" id="popup">
+      <h2>Untuk Ndoro-ku❤️</h2>
+      <p>
+        Jangan marah-marah lagi ya sayangg.. aku minta maafff, gaenak banget aku
+        didiemin gini sama kamuu.. kaya punya hubungan ama patung aku.. jangan
+        marah lagi yaaa cantikkk. mamas minta maafff sayangg, jangan marah lagii
+        pweasee🥺 maafff yaaa cantikk akuuu🥺❣️ mwaaa mwaaa sayangg
+        kamuuu🥰😘❣️❣️
+      </p>
+      <button class="close-btn" onclick="closePopup()">Tutup</button>
+    </div>
+
+    <script>
+      const progressEl = document.getElementById("progress");
+      const clickBtn = document.getElementById("clickBtn");
+      const funnyText = document.getElementById("funnyText");
+      const popup = document.getElementById("popup");
+      const overlay = document.getElementById("overlay");
+
+      let progress = 0;
+      let firstClick = true;
+
+      const funnyWords = [
+        "mamas kaya kebo",
+        "mamas jelek kaya bebek",
+        "pantatnya robek dicium bebek",
+        "mamas kaya lele",
+      ];
+
+      clickBtn.addEventListener("click", (e) => {
+        if (progress < 100) {
+          progress += 10;
+          progressEl.style.width = progress + "%";
+
+          let textToShow;
+          if (firstClick) {
+            textToShow = "mamas jelek";
+            firstClick = false;
+          } else {
+            textToShow =
+              funnyWords[Math.floor(Math.random() * funnyWords.length)];
+          }
+
+          funnyText.textContent = textToShow;
+          funnyText.classList.add("show");
+
+          setTimeout(() => {
+            funnyText.classList.remove("show");
+          }, 2000);
+        }
+
+        if (progress >= 100) {
+          popup.classList.add("show");
+          overlay.classList.add("show");
+        }
+
+        // Hati konfetti
+        for (let i = 0; i < 5; i++) {
+          const heart = document.createElement("span");
+          heart.classList.add("heart");
+          heart.textContent = "❤️";
+          document.body.appendChild(heart);
+
+          const btnRect = clickBtn.getBoundingClientRect();
+          heart.style.left =
+            btnRect.left + btnRect.width / 2 + (Math.random() * 40 - 20) + "px";
+          heart.style.top = btnRect.top + "px";
+
+          heart.style.animationDuration = 0.8 + Math.random() * 0.5 + "s";
+          heart.style.fontSize = 16 + Math.random() * 12 + "px";
+
+          setTimeout(() => heart.remove(), 1000);
+        }
+      });
+
+      setInterval(() => {
+        if (progress > 0 && progress < 100) {
+          progress -= 1;
+          progressEl.style.width = progress + "%";
+        }
+      }, 150);
+
+      function closePopup() {
+        popup.classList.remove("show");
+        overlay.classList.remove("show");
+      }
+    </script>
+  </body>
+</html>
